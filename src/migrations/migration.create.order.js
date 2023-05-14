@@ -13,10 +13,6 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            userId: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
             status: {
                 type: Sequelize.ENUM("pending", "paid"),
                 defaultValue: "pending",

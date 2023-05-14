@@ -17,7 +17,7 @@ module.exports = {
             name: Sequelize.STRING,
             quantity: Sequelize.INTEGER,
             thumb: Sequelize.STRING,
-            expireIn: Sequelize.DATE,
+            productId: Sequelize.STRING,
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

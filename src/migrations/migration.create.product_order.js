@@ -18,6 +18,7 @@ module.exports = {
             quantity: Sequelize.INTEGER,
             discount: Sequelize.STRING,
             thumb: Sequelize.STRING,
+            productId: Sequelize.STRING,
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

@@ -2,20 +2,22 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("Carts", {
+        await queryInterface.createTable("OTPs", {
             id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.STRING,
             },
-            status: Sequelize.ENUM("active", "completed", "failed", "inactive"),
-            count_product: {
-                type: Sequelize.INTEGER,
-                defaultValue: 0,
+            userId: {
+                type: Sequelize.STRING,
+                allowNull: false,
             },
-            total: {
-                type: Sequelize.INTEGER,
-                defaultValue: 0,
+            code: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            expireIn: {
+                type: Sequelize.DATE,
             },
             createdAt: {
                 allowNull: false,
@@ -28,6 +30,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("Carts");
+        await queryInterface.dropTable("OTPs");
     },
 };

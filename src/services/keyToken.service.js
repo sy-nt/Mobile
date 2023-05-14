@@ -15,6 +15,7 @@ class KeyTokenService {
             refreshTokenUsed,
         });
     };
+
     static findKeyTokenByUserId = async ({ userId }) => {
         const keyToken = await KeyToken.findOne({
             where: {
@@ -24,6 +25,17 @@ class KeyTokenService {
             },
         });
         return keyToken.dataValues;
+    };
+
+    static removeKeyTokenByUserId = async ({ userId }) => {
+        const keyToken = await KeyToken.destroy({
+            where: {
+                userId: {
+                    [Op.eq]: userId,
+                },
+            },
+        });
+        return keyToken;
     };
 }
 

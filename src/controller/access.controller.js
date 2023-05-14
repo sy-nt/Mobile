@@ -18,6 +18,13 @@ class AccessController {
         }).send(res);
     };
 
+    logout = async (req, res, next) => {
+        return new OKResponse({
+            message: "Logout success",
+            metadata: await AccessService.logout({ userId: req.user.id }),
+        }).send(res);
+    };
+
     handleRefreshToken = async (req, res, next) => {
         return new OKResponse({
             message: "Handle tokens success",

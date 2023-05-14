@@ -3,6 +3,8 @@
 const { Product } = require("../models");
 const { Op } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
+const { BadRequestError } = require("../core/error.respone");
+const slugify = require("slugify");
 
 class ProductService {
     static setPublishedProduct = async ({ productId }) => {
@@ -77,10 +79,51 @@ class ProductService {
         const product = await Product.create({
             id: uuidv4(),
             ...req.body,
+            slug: slugify(req.body.name),
         });
         return {
             product: product.dataValues,
         };
+    };
+
+    static findProductById = async (id) => {
+        const product = await Product.findOne({
+            where: {
+                id: {
+                    [Op.eq]: id,
+                },
+            },
+        });
+
+        return {
+            product: product.dataValues,
+        };
+    };
+
+    static updateProduct = async ({ productId, product }) => {
+        const productHolder = await this.findProductById(productId);
+        if (!productHolder) throw new BadRequestError("Invalid product id");
+
+        const updateProduct = await Product.update(
+            {
+                ...product,
+                slug: product.name
+                    ? slugify(product.name)
+                    : slugify(productHolder),
+            },
+            {
+                where: {
+                    id: {
+                        [Op.eq]: productId,
+                    },
+                },
+            }
+        );
+        if (!updateProduct)
+            throw new BadRequestError("Product cant be updated");
+
+        console.log(updateProduct);
+        return { updateProduct };
     };
 }
 module.exports = ProductService;

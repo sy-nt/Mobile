@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
 const UserService = require("./user.service");
 const KeyTokenService = require("./keyToken.service");
+const CartService = require("./cart.service");
 const { BadRequestError } = require("../core/error.respone");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils/index");
@@ -30,22 +31,17 @@ class AccessService {
             name: name,
             roles: ROLES["user"],
         });
+        if (!newUser) throw new Error("Something wrong happend");
 
-        if (newUser) {
-            const tokens = await createTokenPair({
-                email,
-                id: newUser.id,
-            });
-            return {
-                shop: getInfoData({
-                    fields: ["name", "email", "phone", "image"],
-                    object: newUser,
-                }),
-                tokens,
-            };
-        }
+        await CartService.createCart({ id: newUser.dataValues.id });
+
+        const tokens = await createTokenPair({
+            email,
+            id: newUser.id,
+        });
+
         return {
-            user: getInfoData({
+            shop: getInfoData({
                 fields: ["name", "email", "phone", "image"],
                 object: newUser,
             }),
@@ -58,6 +54,9 @@ class AccessService {
 
         if (!holderUser)
             throw new BadRequestError("Error:: user is not registed");
+
+        // if (!holderUser.verify)
+        //     throw new BadRequestError("Error:: user is not verified");
 
         const isCorectPass = await bcrypt.compare(
             password,
@@ -107,6 +106,14 @@ class AccessService {
         return {
             tokens,
         };
+    };
+
+    static logout = async ({ userId }) => {
+        const delToken = await KeyTokenService.removeKeyTokenByUserId({
+            userId,
+        });
+
+        return delToken;
     };
 }
 

@@ -18,10 +18,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        userId: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
         status: {
             type: DataTypes.ENUM("pending", "paid"),
             defaultValue: "pending",
