@@ -67,7 +67,8 @@ const authentication = asyncHandler(async (req, res, next) => {
 const isAdmin = asyncHandler(async (req, res, next) => {
     const { email } = req.user;
     const user = await findUserByEmail(email);
-    if (user.roles === "0001") return next();
+    console.log(user);
+    if (user?.roles === "0001") return next();
     throw new UnauthorizedError("Invalid");
 });
 

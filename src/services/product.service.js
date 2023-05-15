@@ -118,13 +118,19 @@ class ProductService {
 
     static searchProduct = async ({ search }) => {
         const listProducts = await Product.findAll({
-            where: [
-                { isPublished: true },
-                Sequelize.literal("MATCH (name) AGAINST (:name)"),
-            ],
-            replacements: {
-                name: search,
+            where: {
+                isPublished: true,
+                name: { [Op.like]: "%" + search + "%" },
+                description: { [Op.like]: "%" + search + "%" },
             },
+
+            // where: [
+            //     { isPublished: true },
+            //     Sequelize.literal("MATCH (name) AGAINST (:name)"),
+            // ],
+            // replacements: {
+            //     name: search,
+            // },
         });
 
         return JSON.parse(JSON.stringify(listProducts, null, 2));

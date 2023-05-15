@@ -70,15 +70,17 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
+            engine: "MyISAM",
             sequelize,
             modelName: "Product",
             indexes: [
                 {
                     type: "FULLTEXT",
-                    name: "text_idx1",
-                    fields: ["description"],
+                    fields: ["description", "name"],
+                    where: {
+                        isPublished: true,
+                    },
                 },
-                { type: "FULLTEXT", name: "text_idx2", fields: ["name"] },
             ],
             hooks: {
                 beforeSave: (product, options) => {
