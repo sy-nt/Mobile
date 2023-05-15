@@ -21,6 +21,10 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
+            price: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+            },
             slug: {
                 type: Sequelize.STRING,
             },
@@ -38,6 +42,9 @@ module.exports = {
             quantity: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+            },
+            quantity: {
+                type: Sequelize.INTEGER,
             },
             createdAt: {
                 allowNull: false,

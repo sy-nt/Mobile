@@ -7,77 +7,60 @@ const { BadRequestError } = require("../core/error.respone");
 class ProductCartService {
     static addProductCart = async ({ cartId, product }) => {
         const foundProduct = await ProductService.findProductById(product.id);
-        if (!foundProduct || foundProduct.isDraft)
-            throw new BadRequestError("Invalid product");
+        if (foundProduct === null) throw new BadRequestError("Invalid product");
 
-        const productCart = await ProductCart.findOne({
-            where: {
-                [Op.and]: [{ cartId }, { productId: product.id }],
-            },
+        const productCart = await this.findProductInCart({
+            cartId,
+            productId: product.id,
         });
+
         if (!productCart) {
-            const { price, name, thumb, quantity, id } = product;
-            const newProductCart = await ProductCart.create({
-                cartId,
-                price,
+            const { name, thumb, quantity, price, cartId: id } = product;
+            return await this.createProductCart({
                 name,
                 thumb,
                 quantity,
-                productId: id,
+                price,
+                id,
             });
-
-            return {
-                newProductCart,
-            };
         }
-        const newQuantity = productCart.dataValues.quantity + product.quantity;
 
+        const newQuantity = productCart.dataValues.quantity + product.quantity;
         if (newQuantity < 0)
             throw new BadRequestError("Invalid quantity product");
-
         if (newQuantity === 0)
             return await this.removeProductCart({
                 cartId,
-                productId: product.id,
+                productIds: product.id,
             });
-
         if (newQuantity > foundProduct.quantity)
             throw new BadRequestError("Stock is not enough");
 
-        const newProductCart = await ProductCart.increment(
-            {
-                quantity: product.quantity,
-            },
-            {
-                where: {
-                    [Op.and]: [{ cartId }, { productId: product.id }],
-                },
-            }
-        );
-        return newProductCart;
+        return await this.updateProductCart({
+            cartId,
+            productId: foundProduct.id,
+            options: { quantity: newQuantity },
+        });
     };
 
-    // static removeProductCart = async ({ cartId, productId }) => {
-    //     const foundProduct = await ProductService.findProductById(productId);
+    static createProductCart = async ({
+        name,
+        thumb,
+        quantity,
+        price,
+        cartId,
+    }) => {
+        const productCart = await ProductCart.create({
+            name,
+            thumb,
+            quantity,
+            price,
+            cartId,
+        });
 
-    //     if (!foundProduct || foundProduct.isDraft)
-    //         throw new BadRequestError("Invalid product");
-
-    //     const productCart = await ProductCart.findOne({
-    //         where: {
-    //             [Op.and]: [{ cartId }, { productId }],
-    //         },
-    //     });
-
-    //     if (!productCart) throw new BadRequestError("Invalid product");
-    //     const deleteProductCart = await ProductCart.destroy({
-    //         where: {
-    //             [Op.and]: [{ cartId }, { productId }],
-    //         },
-    //     });
-
-    //     return deleteProductCart;
-    // };
+        if (productCart) return productCart.dataValues;
+        return null;
+    };
 
     static removeProductCart = async ({ cartId, productIds }) => {
         const deleteProductCart = await ProductCart.destroy({
@@ -85,11 +68,11 @@ class ProductCartService {
                 [Op.and]: [{ cartId }, { productId: productIds }],
             },
         });
-
-        return deleteProductCart;
+        if (deleteProductCart) return true;
+        return null;
     };
 
-    static findProductCartByCartId = async (cartId) => {
+    static findAllProductCartByCartId = async (cartId) => {
         const productCarts = await ProductCart.findAll({
             where: {
                 cartId: {
@@ -98,11 +81,30 @@ class ProductCartService {
             },
         });
 
-        if (!productCarts) throw new BadRequestError("Invalid cartId");
+        if (productCarts)
+            return JSON.parse(JSON.stringify(productCarts, null, 2));
+        return null;
+    };
 
-        return {
-            products: JSON.parse(JSON.stringify(productCarts, null, 2)),
-        };
+    static findProductInCart = async ({ cartId, productId }) => {
+        const productCart = await ProductCart.findOne({
+            where: {
+                [Op.and]: [{ cartId }, { productId: productId }],
+            },
+        });
+        if (productCart) return productCart.dataValues;
+        return null;
+    };
+
+    static updateProductCart = async ({ cartId, productId, options }) => {
+        const updatedProduct = await ProductCart.update(options, {
+            where: {
+                [Op.and]: [{ cartId }, { productId }],
+            },
+        });
+        if (!updatedProduct)
+            throw new BadRequestError("Product cant be updated");
+        return true;
     };
 }
 

@@ -20,6 +20,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             total: {
                 type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: {
+                        args: [0],
+                        msg: "totalPrice must be positive number",
+                    },
+                },
                 defaultValue: 0,
             },
         },

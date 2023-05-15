@@ -9,11 +9,13 @@ class KeyTokenService {
         userId,
         refreshTokenUsed,
     }) => {
-        return await KeyToken.create({
+        const keyToken = await KeyToken.create({
             refreshToken,
             userId,
             refreshTokenUsed,
         });
+        if (keyToken) return keyToken.dataValues;
+        return null;
     };
 
     static findKeyTokenByUserId = async ({ userId }) => {
@@ -24,7 +26,8 @@ class KeyTokenService {
                 },
             },
         });
-        return keyToken.dataValues;
+        if (keyToken) return keyToken.dataValues;
+        return null;
     };
 
     static removeKeyTokenByUserId = async ({ userId }) => {
@@ -35,7 +38,31 @@ class KeyTokenService {
                 },
             },
         });
-        return keyToken;
+        if (keyToken) return true;
+        return null;
+    };
+
+    static addUsedRefreshToken = async ({ userId, refreshToken }) => {
+        const keyTokenHolder = await this.findKeyTokenByUserId({ userId });
+        const refreshTokenUsed = JSON.parse(keyTokenHolder.refreshTokenUsed);
+        refreshTokenUsed.push(refreshToken);
+
+        const keyToken = await KeyToken.update(
+            {
+                refreshToken: refreshToken,
+                refreshTokenUsed: refreshTokenUsed,
+            },
+            {
+                where: {
+                    userId: {
+                        [Op.eq]: userId,
+                    },
+                },
+            }
+        );
+        console.log(keyToken);
+        if (keyToken) return true;
+        return null;
     };
 }
 

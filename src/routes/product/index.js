@@ -11,6 +11,7 @@ router.get(
     "/published",
     asyncHandler(ProductController.getAllPublishedProduct)
 );
+router.post("/search", asyncHandler(ProductController.searchProduct));
 router.post("/:productId", asyncHandler(ProductController.updateProduct));
 
 router.use(authentication);

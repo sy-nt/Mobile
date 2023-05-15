@@ -7,20 +7,17 @@ class CategoryService {
         const categories = await Category.findAll({
             attributes: { exclude: ["createdAt", "updatedAt"] },
         });
-        return {
-            categories: JSON.parse(JSON.stringify(categories, null, 2)),
-        };
+
+        if (categories) return JSON.parse(JSON.stringify(categories, null, 2));
+        return null;
     };
 
     static createCategory = async (req) => {
-        console.log(req.body);
         const category = await Category.create({
             ...req.body,
-            id: uuidv4(),
         });
-        return {
-            category: category.dataValues,
-        };
+        if (category) return category.dataValues;
+        return null;
     };
 }
 

@@ -1,5 +1,10 @@
 "use strict";
 const { Model } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcrypt");
+
+const EXPRIRE_TIME = 10;
+
 module.exports = (sequelize, DataTypes) => {
     class OTP extends Model {
         /**
@@ -26,6 +31,19 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
+            hooks: {
+                beforeValidate: (OTP) => {
+                    const code = Math.round(
+                        Math.random() * 100000 + 10000
+                    ).toString();
+                    OTP.code = bcrypt.hashSync(code, 10);
+                },
+                beforeCreate: (OTP) => {
+                    OTP.id = uuidv4();
+                    OTP.expireIn =
+                        new Date().getTime() + EXPRIRE_TIME * 60 * 1000;
+                },
+            },
             sequelize,
             modelName: "OTP",
         }

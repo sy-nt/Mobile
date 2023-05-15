@@ -18,29 +18,9 @@ class OTPService {
                 },
             },
         });
-        if (!holderUser.dataValues)
-            throw new BadRequestError("User is not registed");
+        if (!holderUser) throw new BadRequestError("User is not registed");
 
-        const codeString = Math.round(
-            Math.random() * 100000 + 10000
-        ).toString();
-        console.log(`OTPcode:: `, codeString);
-        const code = await bcrypt.hash(codeString, 10);
-        const expiredTime = new Date().getTime() + EXPRIRE_TIME * 60 * 1000;
-
-        console.log(`code:: ${code}`);
-        console.log(`expiredTime:: ${expiredTime}`);
-
-        const OTPobj = await OTP.create({
-            userId: holderUser.id,
-            code: code,
-            expiredIn: expiredTime,
-            id: uuidv4(),
-        });
-
-        return {
-            OTP: OTPobj,
-        };
+        return await this.createOTP({ userId: holderUser.dataValues.id });
     };
 
     static verifyOTP = async ({ email, code }) => {
@@ -53,32 +33,49 @@ class OTPService {
         });
         if (!holderUser) throw new BadRequestError("User is not registed");
 
-        const OTPs = await OTP.findAll({
-            where: {
-                userId: {
-                    [Op.eq]: holderUser.id,
-                },
-            },
-        });
+        const OTPs = await this.findAllOtp({ userId: holderUser.id });
+        if (!OTPs) throw new BadRequestError("Invalid OTP");
 
-        const listOTP = JSON.parse(JSON.stringify(OTPs, null, 2));
-        const hashedOtp = listOTP[listOTP.length - 1].code;
-
+        const hashedOtp = OTPs[OTPs.length - 1].code;
         const isMatch = await bcrypt.compare(code, hashedOtp);
         if (!isMatch) throw new BadRequestError("Invalid OTP");
 
-        const deletedOTP = await OTP.destroy({
+        if (await this.deleteOTP({ userID: holderUser.dataValues.id }))
+            return holderUser.dataValues;
+        return null;
+    };
+
+    static createOTP = async ({ userId }) => {
+        const otp = OTP.create({
+            userId,
+        });
+
+        if (otp) return otp.dataValues;
+        return null;
+    };
+
+    static findAllOtp = async ({ userId }) => {
+        const otps = await OTP.findAll({
             where: {
                 userId: {
-                    [Op.eq]: holderUser.id,
+                    [Op.eq]: userId,
                 },
             },
         });
+        if (otps) return JSON.parse(JSON.stringify(otps, null, 2));
+        return null;
+    };
 
-        return {
-            user: holderUser,
-            delete: deletedOTP,
-        };
+    static deleteOTP = async ({ userId }) => {
+        const otps = await OTP.destroy({
+            where: {
+                userId: {
+                    [Op.eq]: userId,
+                },
+            },
+        });
+        if (otps) return true;
+        return null;
     };
 }
 

@@ -1,11 +1,13 @@
 "use strict";
 
 const { asyncHandler } = require("../helpers/asyncHandler");
+
 const {
     AuthFailureError,
     BadRequestError,
     UnauthorizedError,
 } = require("../core/error.respone");
+
 const jwt = require("jsonwebtoken");
 const { findKeyTokenByUserId } = require("../services/keyToken.service");
 const { findUserByEmail } = require("../services/user.service");
@@ -66,9 +68,12 @@ const authentication = asyncHandler(async (req, res, next) => {
 
 const isAdmin = asyncHandler(async (req, res, next) => {
     const { email } = req.user;
-    const user = await findUserByEmail(email);
-    if (user.roles === "0001") return next();
-    throw new UnauthorizedError("Invalid");
+    findUserByEmail(email)
+        .then((user) => {
+            if (user.roles == "0001") return next();
+            throw new BadRequestError("Invalid");
+        })
+        .catch((err) => console.log(err));
 });
 
 const createTokenPair = async (payload) => {

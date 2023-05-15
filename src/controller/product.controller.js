@@ -52,6 +52,15 @@ class ProductController {
             }),
         }).send(res);
     };
+
+    searchProduct = async (req, res, next) => {
+        return new OKResponse({
+            message: "Search product success",
+            metadata: await ProductService.searchProduct({
+                search: req.body.search,
+            }),
+        }).send(res);
+    };
 }
 
 module.exports = new ProductController();

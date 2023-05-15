@@ -17,12 +17,34 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            quantity: DataTypes.INTEGER,
-            name: DataTypes.STRING,
-            price: DataTypes.INTEGER,
-            discount: DataTypes.STRING,
-            thumb: DataTypes.STRING,
-            productId: DataTypes.STRING,
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            thumb: {
+                type: DataTypes.STRING,
+                defaultValue: `https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png`,
+            },
+            quantity: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: {
+                        args: [0],
+                        msg: "Quantity must be positive number",
+                    },
+                },
+            },
+            price: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: {
+                        args: [0],
+                        msg: "Price must be positive number",
+                    },
+                },
+            },
         },
         {
             sequelize,

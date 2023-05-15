@@ -10,10 +10,8 @@ class CartService {
             id,
             status: "inactive",
         });
-
-        return {
-            cart,
-        };
+        if (cart) return cart.dataValues;
+        return null;
     };
 
     static activeCart = async ({ id }) => {
@@ -29,10 +27,20 @@ class CartService {
                 },
             }
         );
+        if (cart) return cart.dataValues;
+        return null;
+    };
 
-        return {
-            cartUpdated: cart,
-        };
+    static updateCart = async ({ id, options }) => {
+        const updatedCart = await Cart.update(options, {
+            where: {
+                id: {
+                    [Op.eq]: id,
+                },
+            },
+        });
+        if (updatedCart) return updatedCart.dataValues;
+        return null;
     };
 
     static findCartById = async (id) => {
@@ -43,8 +51,8 @@ class CartService {
                 },
             },
         });
-
-        return cart;
+        if (cart) return cart.dataValues;
+        return null;
     };
 
     static addProductToCart = async ({ id, product }) => {
@@ -55,9 +63,8 @@ class CartService {
 
         if (!productCart) throw new BadRequestError("Something wrong happend");
 
-        const productCartsObj =
-            await ProductCartService.findProductCartByCartId(id);
-        const productCarts = productCartsObj.products;
+        const productCarts =
+            await ProductCartService.findAllProductCartByCartId(id);
 
         let totalPrice = 0;
         let totalProduct = 0;
@@ -71,24 +78,17 @@ class CartService {
             totalProduct = productCarts.reduce((acc, e) => acc + e.quantity, 0);
         }
 
-        const updatedCart = await Cart.update(
-            {
+        const updatedCart = await this.updateCart({
+            id,
+            options: {
                 total: totalPrice,
                 count_product: totalProduct,
             },
-            {
-                where: {
-                    id: {
-                        [Op.eq]: id,
-                    },
-                },
-            }
-        );
+        });
 
         if (!updatedCart) throw new BadRequestError("Updated cart failed");
         return {
-            count_product: totalProduct,
-            total: totalPrice,
+            ...updatedCart,
             productCarts,
         };
     };
@@ -98,12 +98,10 @@ class CartService {
             cartId: id,
             productIds,
         });
-
         if (!productCart) throw new BadRequestError("Something wrong happend");
 
-        const productCartsObj =
-            await ProductCartService.findProductCartByCartId(id);
-        const productCarts = productCartsObj.products;
+        const productCarts =
+            await ProductCartService.findAllProductCartByCartId(id);
 
         let totalPrice = 0;
         let totalProduct = 0;
@@ -117,24 +115,17 @@ class CartService {
             totalProduct = productCarts.reduce((acc, e) => acc + e.quantity, 0);
         }
 
-        const updatedCart = await Cart.update(
-            {
+        const updatedCart = await this.updateCart({
+            id,
+            options: {
                 total: totalPrice,
                 count_product: totalProduct,
             },
-            {
-                where: {
-                    id: {
-                        [Op.eq]: id,
-                    },
-                },
-            }
-        );
+        });
 
         if (!updatedCart) throw new BadRequestError("Updated cart failed");
         return {
-            count_product: totalProduct,
-            total: totalPrice,
+            ...updatedCart,
             productCarts,
         };
     };

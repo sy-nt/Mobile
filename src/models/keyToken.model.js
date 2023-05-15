@@ -1,7 +1,5 @@
-'use strict';
-const {
-    Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class KeyToken extends Model {
         /**
@@ -13,16 +11,22 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    KeyToken.init({
-        userId: {
-            type: DataTypes.STRING,
-            allowNull: false
+    KeyToken.init(
+        {
+            userId: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            refreshToken: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            refreshTokenUsed: DataTypes.JSON,
         },
-        refreshToken: DataTypes.STRING,
-        refreshTokenUsed: DataTypes.JSON,
-    }, {
-        sequelize,
-        modelName: 'KeyToken',
-    });
+        {
+            sequelize,
+            modelName: "KeyToken",
+        }
+    );
     return KeyToken;
 };

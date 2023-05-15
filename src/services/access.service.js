@@ -17,46 +17,33 @@ const ROLES = {
 };
 
 class AccessService {
-    static signUp = async ({ name, email, password }) => {
+    static signUp = async ({ email, password, phone }) => {
         const holderUser = await UserService.findUserByEmail(email);
-
-        if (holderUser)
+        if (holderUser !== null)
             throw new BadRequestError("Error:: Email already registed");
 
-        const passwordHash = await bcrypt.hash(password, 10);
         const newUser = await User.create({
-            id: uuidv4(),
-            email: email,
-            password: passwordHash.toString(),
-            name: name,
+            email,
+            password,
+            phone,
             roles: ROLES["user"],
         });
-        if (!newUser) throw new Error("Something wrong happend");
+        if (!newUser) throw new BadRequestError("Something wrong");
 
-        await CartService.createCart({ id: newUser.dataValues.id });
-
-        const tokens = await createTokenPair({
-            email,
-            id: newUser.id,
-        });
+        await CartService.createCart({ id: newUser.id });
 
         return {
             shop: getInfoData({
                 fields: ["name", "email", "phone", "image"],
                 object: newUser,
             }),
-            tokens,
         };
     };
 
     static login = async ({ email, password }) => {
         const holderUser = await UserService.findUserByEmail(email);
-
         if (!holderUser)
             throw new BadRequestError("Error:: user is not registed");
-
-        // if (!holderUser.verify)
-        //     throw new BadRequestError("Error:: user is not verified");
 
         const isCorectPass = await bcrypt.compare(
             password,
@@ -64,10 +51,14 @@ class AccessService {
         );
         if (!isCorectPass) throw new BadRequestError("Invalid request");
 
+        // if (!holderUser.verify)
+        //     throw new BadRequestError("Error:: user is not verified");
+
         const tokens = await createTokenPair({
             id: holderUser.id,
             email,
         });
+
         await KeyTokenService.createKeyToken({
             refreshToken: tokens.refreshToken,
             userId: holderUser.id,
@@ -86,34 +77,27 @@ class AccessService {
     static handleRefreshToken = async ({ refreshToken, user, keyToken }) => {
         const refreshTokenUsed = JSON.parse(keyToken.refreshTokenUsed);
         if (refreshTokenUsed.includes(refreshToken))
-            throw new BadRequestError("Something wrong pls relogin");
+            throw new BadRequestError("pls relogin");
 
         const { id, email } = user;
         const tokens = await createTokenPair({ id, email });
-        await KeyToken.update(
-            {
-                refreshToken: tokens.refreshToken,
-                refreshTokenUsed: [...refreshTokenUsed, refreshToken],
-            },
-            {
-                where: {
-                    refreshToken: {
-                        [Op.eq]: refreshToken,
-                    },
-                },
-            }
-        );
-        return {
-            tokens,
-        };
+        const newKeyToken = await KeyTokenService.addUsedRefreshToken({
+            userId: user.id,
+            refreshToken: refreshToken,
+        });
+        if (newKeyToken)
+            return {
+                tokens,
+            };
+        return null;
     };
 
     static logout = async ({ userId }) => {
         const delToken = await KeyTokenService.removeKeyTokenByUserId({
             userId,
         });
-
-        return delToken;
+        if (delToken) return true;
+        return null;
     };
 }
 

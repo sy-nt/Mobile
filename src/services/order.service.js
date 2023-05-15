@@ -7,44 +7,45 @@ const CartService = require("./cart.service");
 const { BadRequestError } = require("../core/error.respone");
 
 class OrderService {
-    static createOrder = async ({ cartId }) => {
+    static placeOrder = async ({ cartId }) => {
         const cartHolder = await CartService.findCartById(cartId);
         if (!cartHolder) throw new BadRequestError("invalid cart");
 
-        const productCartListObj =
-            await ProductCartService.findProductCartByCartId(cartId);
-        const productCartList = productCartListObj.products;
-
-        const order = await Order.create({
+        const order = await this.createOrder({
             cartId,
-            total_price: cartHolder.total,
+            total: cartHolder.total,
         });
-        if (!order) throw new BadRequestError("Something wrong:: order");
 
+        const productCartList =
+            await ProductCartService.findAllProductCartByCartId(cartId);
         const productOrderList = productCartList.map((element) => {
-            const { quantity, name, price, thumb, productId } = element;
-
+            const {
+                quantity,
+                name,
+                price,
+                thumb,
+                productId: orderId,
+            } = element;
             return {
                 quantity,
                 name,
                 price,
                 thumb,
-                productId,
-                orderId: order.dataValues.id,
+                orderId,
             };
         });
+        const productCartIds = productCartList.map((e) => e.productId);
 
         const productOrders = ProductOrder.bulkCreate(productOrderList);
-
-        const productCartIds = productCartList.map((e) => e.productId);
-        await ProductCartService.removeProductCart({
+        if (!productOrders)
+            throw new BadRequestError("Cant perfome bulkcreate");
+        const productCarts = await ProductCartService.removeProductCart({
             cartId,
             productIds: productCartIds,
         });
-
-        if (!productOrders)
-            throw new BadRequestError("Something wrong:: orderproduct");
-
+        if (!productCarts)
+            throw new BadRequestError("Cant perfome removeProductCart");
+            
         return {
             id: order.id,
             cartId,
@@ -52,6 +53,25 @@ class OrderService {
             total: order.total,
             productOrders: productOrderList,
         };
+    };
+
+    static getOrderByOrderId = async (orderId) => {
+        const order = await Order.findOne({
+            where: {
+                id: {
+                    [Op.eq]: orderId,
+                },
+            },
+        });
+
+        if (order) return order.dataValues;
+        return null;
+    };
+
+    static createOrder = async ({ cartId, total }) => {
+        const order = await Order.create({ cartId, total });
+        if (order) return order.dataValues;
+        return null;
     };
 }
 

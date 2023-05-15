@@ -1,6 +1,6 @@
 "use strict";
 
-const { Product } = require("../models");
+const { Product, Sequelize } = require("../models");
 const { Op } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const { BadRequestError } = require("../core/error.respone");
@@ -22,9 +22,9 @@ class ProductService {
                 attributes: { exclude: ["createdAt", "updatedAt"] },
             }
         );
-        return {
-            updatedProduct,
-        };
+        if (!updatedProduct)
+            throw new BadRequestError("Product cant be updated");
+        return true;
     };
 
     static setDraftProduct = async ({ productId }) => {
@@ -42,9 +42,9 @@ class ProductService {
                 attributes: { exclude: ["createdAt", "updatedAt"] },
             }
         );
-        return {
-            updatedProduct,
-        };
+        if (!updatedProduct)
+            throw new BadRequestError("Product cant be updated");
+        return true;
     };
 
     static getAllPublishedProduct = async () => {
@@ -56,9 +56,8 @@ class ProductService {
             },
             attributes: { exclude: ["createdAt", "updatedAt"] },
         });
-        return {
-            products: JSON.parse(JSON.stringify(products, null, 2)),
-        };
+        if (products) return JSON.parse(JSON.stringify(products, null, 2));
+        return null;
     };
 
     static getAllDraftProduct = async () => {
@@ -70,20 +69,18 @@ class ProductService {
             },
             attributes: { exclude: ["createdAt", "updatedAt"] },
         });
-        return {
-            products: JSON.parse(JSON.stringify(products, null, 2)),
-        };
+        if (products) return JSON.parse(JSON.stringify(products, null, 2));
+        return null;
     };
 
     static createProduct = async (req) => {
         const product = await Product.create({
             id: uuidv4(),
             ...req.body,
-            slug: slugify(req.body.name),
         });
-        return {
-            product: product.dataValues,
-        };
+
+        if (product) return product.dataValues;
+        return null;
     };
 
     static findProductById = async (id) => {
@@ -95,21 +92,15 @@ class ProductService {
             },
         });
 
-        return {
-            product: product.dataValues,
-        };
+        if (product && product.dataValues.isPublished)
+            return product.dataValues;
+        return null;
     };
 
     static updateProduct = async ({ productId, product }) => {
-        const productHolder = await this.findProductById(productId);
-        if (!productHolder) throw new BadRequestError("Invalid product id");
-
-        const updateProduct = await Product.update(
+        const updatedProduct = await Product.update(
             {
                 ...product,
-                slug: product.name
-                    ? slugify(product.name)
-                    : slugify(productHolder),
             },
             {
                 where: {
@@ -119,11 +110,24 @@ class ProductService {
                 },
             }
         );
-        if (!updateProduct)
+        if (!updatedProduct)
             throw new BadRequestError("Product cant be updated");
 
-        console.log(updateProduct);
-        return { updateProduct };
+        return true;
+    };
+
+    static searchProduct = async ({ search }) => {
+        const listProducts = await Product.findAll({
+            where: [
+                { isPublished: true },
+                Sequelize.literal("MATCH (name) AGAINST (:name)"),
+            ],
+            replacements: {
+                name: search,
+            },
+        });
+
+        return JSON.parse(JSON.stringify(listProducts, null, 2));
     };
 }
 module.exports = ProductService;

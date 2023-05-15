@@ -24,9 +24,35 @@ const getUnSelectData = (select = []) => {
     return Object.fromEntries(select.map((el) => [el, 0]));
 };
 
+const createTokenPair = async (payload) => {
+    try {
+        const accessToken = await jwt.sign(
+            payload,
+            process.env.DEV_ACCESS_TOKEN_SECRET,
+            {
+                expiresIn: "1h",
+            }
+        );
+        const refreshToken = await jwt.sign(
+            payload,
+            process.env.DEV_REFRESH_TOKEN_SECRET,
+            {
+                expiresIn: "7d",
+            }
+        );
+        return {
+            accessToken,
+            refreshToken,
+        };
+    } catch (err) {
+        console.log("Create Token Pair Error::", err.message);
+    }
+};
+
 module.exports = {
     getInfoData,
     fullUrl,
     getSelectData,
     getUnSelectData,
+    createTokenPair,
 };

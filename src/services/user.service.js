@@ -6,6 +6,15 @@ const { verifyOTP } = require("./otp.service");
 const { activeCart } = require("./cart.service");
 
 class UserService {
+    static createUser = async ({ email, password }) => {
+        const user = await User.create({
+            email,
+            password,
+        });
+        if (user) return user.dataValues;
+        return null;
+    };
+
     static findUserByEmail = async (email) => {
         const user = await User.findOne({
             where: {
@@ -14,12 +23,13 @@ class UserService {
                 },
             },
         });
-        return user;
+        if (user) return user.dataValues;
+        return null;
     };
 
     static activeUser = async ({ email, code }) => {
         const verify = await verifyOTP({ email, code });
-        if (!verify.delete) throw new Error("Something wrong happend");
+        if (!verify) throw new Error("Something wrong happend");
 
         const activeUser = await User.update(
             {
@@ -35,15 +45,12 @@ class UserService {
         );
         if (!activeUser) throw new Error("Something wrong happend");
 
-        await activeCart({ id: verify.user.id });
-
-        return {
-            user: activeUser,
-        };
+        const active = await activeCart({ id: verify.id });
+        if (active) return true;
+        return null;
     };
 
     static updateUser = async (req) => {
-        console.log(req.body);
         const updatedUser = await User.update(req.body, {
             where: {
                 email: {
@@ -56,7 +63,6 @@ class UserService {
             updatedUser,
         };
     };
-
 }
 
 module.exports = UserService;

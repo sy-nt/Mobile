@@ -1,7 +1,7 @@
-'use strict';
-const {
-    Model
-} = require('sequelize');
+"use strict";
+const { v4: uuidv4 } = require("uuid");
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
     class Category extends Model {
         /**
@@ -13,13 +13,28 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    Category.init({
-        name: DataTypes.STRING,
-        description: DataTypes.TEXT,
-        thumb: DataTypes.STRING,
-    }, {
-        sequelize,
-        modelName: 'Category',
-    });
+    Category.init(
+        {
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            description: DataTypes.TEXT,
+            thumb: {
+                type: DataTypes.STRING,
+                defaultValue:
+                    "https://png.pngtree.com/template/20220419/ourmid/pngtree-photo-coming-soon-abstract-admin-banner-image_1262901.jpg",
+            },
+        },
+        {
+            sequelize,
+            modelName: "Category",
+            hooks: {
+                beforeCreate: (category, options) => {
+                    category.id = uuidv4();
+                },
+            },
+        }
+    );
     return Category;
 };
