@@ -1,6 +1,5 @@
 "use strict";
-const { Order, Cart, ProductCart, ProductOrder } = require("../models");
-const { v4: uuidv4 } = require("uuid");
+const { Order, ProductOrder } = require("../models");
 const { Op } = require("sequelize");
 const ProductCartService = require("./productCart.service");
 const CartService = require("./cart.service");
@@ -19,24 +18,20 @@ class OrderService {
         const productCartList =
             await ProductCartService.findAllProductCartByCartId(cartId);
         const productOrderList = productCartList.map((element) => {
-            const {
-                quantity,
-                name,
-                price,
-                thumb,
-                productId: orderId,
-            } = element;
+            const { quantity, name, price, thumb, productId } = element;
             return {
                 quantity,
                 name,
                 price,
                 thumb,
-                orderId,
+                productId,
+                userId: cartId,
+                orderId: order.id,
             };
         });
         const productCartIds = productCartList.map((e) => e.productId);
 
-        const productOrders = ProductOrder.bulkCreate(productOrderList);
+        const productOrders = await ProductOrder.bulkCreate(productOrderList);
         if (!productOrders)
             throw new BadRequestError("Cant perfome bulkcreate");
         const productCarts = await ProductCartService.removeProductCart({
@@ -45,7 +40,14 @@ class OrderService {
         });
         if (!productCarts)
             throw new BadRequestError("Cant perfome removeProductCart");
-            
+
+        await CartService.updateCart({
+            id: cartId,
+            options: {
+                count_product: 0,
+            },
+        });
+
         return {
             id: order.id,
             cartId,
@@ -72,6 +74,34 @@ class OrderService {
         const order = await Order.create({ cartId, total });
         if (order) return order.dataValues;
         return null;
+    };
+
+    static updateStatusOrder = async ({ orderId }) => {
+        const updatedOrder = await Order.update(
+            { status: "paid" },
+            {
+                where: {
+                    id: {
+                        [Op.eq]: orderId,
+                    },
+                },
+            }
+        );
+        if (!updatedOrder) throw new BadRequestError("Invalid order");
+
+        const productOrderList = await ProductOrder.update(
+            { status: "sold" },
+            {
+                where: {
+                    orderId: {
+                        [Op.eq]: orderId,
+                    },
+                },
+            }
+        );
+        if (!productOrderList) throw new BadRequestError("Invalid order");
+
+        return true;
     };
 }
 

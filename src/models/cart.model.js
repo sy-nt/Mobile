@@ -1,5 +1,6 @@
 "use strict";
-const { Model } = require("sequelize");
+const { Model, UUIDV4 } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
 module.exports = (sequelize, DataTypes) => {
     class Cart extends Model {
         /**
@@ -31,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         {
+            hooks: {
+                beforeCreate: (cart, options) => {
+                    cart.id = uuidv4()
+                }
+            },
             sequelize,
             modelName: "Cart",
         }

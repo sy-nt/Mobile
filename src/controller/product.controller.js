@@ -25,14 +25,14 @@ class ProductController {
     getAllPublishedProduct = async (req, res, next) => {
         return new OKResponse({
             message: "Get list product success",
-            metadata: await ProductService.getAllPublishedProduct(),
+            metadata: await ProductService.getAllPublishedProduct({}),
         }).send(res);
     };
 
     getAllDraftProduct = async (req, res, next) => {
         return new OKResponse({
             message: "Get list product success",
-            metadata: await ProductService.getAllDraftProduct(),
+            metadata: await ProductService.getAllDraftProduct({}),
         }).send(res);
     };
 
@@ -53,11 +53,22 @@ class ProductController {
         }).send(res);
     };
 
-    searchProduct = async (req, res, next) => {
+    searchProductWithFilter = async (req, res, next) => {
         return new OKResponse({
             message: "Search product success",
-            metadata: await ProductService.searchProduct({
+            metadata: await ProductService.searchProductWithFilter({
                 search: req.body.search,
+            }),
+        }).send(res);
+    };
+
+    reviewProduct = async (req, res, next) => {
+        return new OKResponse({
+            message: "Review product success",
+            metadata: await ProductService.reviewProduct({
+                review: req.body,
+                productId: req.params.productId,
+                email: req.user.email,
             }),
         }).send(res);
     };

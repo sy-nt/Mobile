@@ -15,17 +15,19 @@ class ProductCartService {
         });
 
         if (!productCart) {
-            const { name, thumb, quantity, price, cartId: id } = product;
+            const { name, thumb, quantity, price } = product;
+            console.log(product);
             return await this.createProductCart({
                 name,
                 thumb,
                 quantity,
                 price,
-                id,
+                productId: product.id,
+                cartId,
             });
         }
 
-        const newQuantity = productCart.dataValues.quantity + product.quantity;
+        const newQuantity = productCart.quantity + product.quantity;
         if (newQuantity < 0)
             throw new BadRequestError("Invalid quantity product");
         if (newQuantity === 0)
@@ -49,6 +51,7 @@ class ProductCartService {
         quantity,
         price,
         cartId,
+        productId,
     }) => {
         const productCart = await ProductCart.create({
             name,
@@ -56,6 +59,7 @@ class ProductCartService {
             quantity,
             price,
             cartId,
+            productId,
         });
 
         if (productCart) return productCart.dataValues;
@@ -78,6 +82,9 @@ class ProductCartService {
                 cartId: {
                     [Op.eq]: cartId,
                 },
+            },
+            attributes: {
+                exclude: ["createdAt", "updatedAt"],
             },
         });
 

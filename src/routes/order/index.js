@@ -8,6 +8,7 @@ const { asyncHandler } = require("../../helpers/asyncHandler");
 const { authentication, isAdmin } = require("../../auth/authUtils");
 
 router.use(authentication);
+router.post("/:orderId", asyncHandler(OrderController.updateStatusOrder));
 router.post("/", asyncHandler(OrderController.placeOrder));
 
 module.exports = router;

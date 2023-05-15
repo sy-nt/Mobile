@@ -45,6 +45,18 @@ module.exports = (sequelize, DataTypes) => {
                     },
                 },
             },
+            status: {
+                type: DataTypes.ENUM("pending", "return", "sold"),
+                defaultValue: "pending",
+            },
+            productId: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            userId: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
         },
         {
             sequelize,

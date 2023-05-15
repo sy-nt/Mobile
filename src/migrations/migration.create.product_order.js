@@ -27,6 +27,14 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DATE,
             },
+            status: {
+                type: Sequelize.ENUM("pending", "return", "sold"),
+                defaultValue: "pending",
+            },
+            userId: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
         });
     },
     async down(queryInterface, Sequelize) {

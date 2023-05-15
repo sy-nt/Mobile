@@ -1,5 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
+const { v4: uuidv4 } = require("uuid");
+
 module.exports = (sequelize, DataTypes) => {
     class Order extends Model {
         /**
@@ -35,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: "Order",
+            hooks: {
+                beforeCreate: (order, options) => {
+                    order.id = uuidv4();
+                }
+            }
         }
     );
     return Order;

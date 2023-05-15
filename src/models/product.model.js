@@ -68,6 +68,18 @@ module.exports = (sequelize, DataTypes) => {
                     },
                 },
             },
+            soldCount: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
+            },
+            star: {
+                type: DataTypes.FLOAT,
+                defaultValue: 4.5,
+            },
+            review: {
+                type: DataTypes.JSON,
+                defaultValue: "[]",
+            },
         },
         {
             engine: "MyISAM",

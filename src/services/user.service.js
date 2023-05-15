@@ -1,6 +1,6 @@
 "use strict";
 
-const { User, OTP, KeyToken } = require("../models");
+const { User, OTP, KeyToken, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const { verifyOTP } = require("./otp.service");
 const { activeCart } = require("./cart.service");

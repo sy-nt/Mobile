@@ -39,7 +39,7 @@ class CartService {
                 },
             },
         });
-        if (updatedCart) return updatedCart.dataValues;
+        if (updatedCart) return true;
         return null;
     };
 
@@ -85,7 +85,6 @@ class CartService {
                 count_product: totalProduct,
             },
         });
-
         if (!updatedCart) throw new BadRequestError("Updated cart failed");
         return {
             ...updatedCart,

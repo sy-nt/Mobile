@@ -1,5 +1,4 @@
 "use strict";
-
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
@@ -12,7 +11,9 @@ const db = {};
 
 const sequelize = new Sequelize(name, username, password, {
     host: host,
-    dialect: 'mysql',
+    dialect: "mysql",
+    operatorsAliases: "false",
+    logging: false,
 });
 
 fs.readdirSync(__dirname)

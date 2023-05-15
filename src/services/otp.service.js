@@ -1,6 +1,6 @@
 "use strict";
 
-const { OTP, User } = require("../models");
+const { OTP, User, sequelize } = require("../models");
 const { Op, Model } = require("sequelize");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");

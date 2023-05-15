@@ -55,6 +55,18 @@ module.exports = {
                     allowNull: false,
                     type: Sequelize.DATE,
                 },
+                soldCount: {
+                    type: Sequelize.INTEGER,
+                    defaultValue: 0,
+                },
+                star: {
+                    type: Sequelize.FLOAT,
+                    defaultValue: 4.5,
+                },
+                review: {
+                    type: Sequelize.JSON,
+                    defaultValue: [],
+                },
             })
             .then(() =>
                 queryInterface.addIndex("Products", ["name", "description"], {

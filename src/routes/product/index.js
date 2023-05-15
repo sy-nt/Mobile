@@ -11,7 +11,7 @@ router.get(
     "/published",
     asyncHandler(ProductController.getAllPublishedProduct)
 );
-router.post("/search", asyncHandler(ProductController.searchProduct));
+router.post("/search", asyncHandler(ProductController.searchProductWithFilter));
 router.post("/:productId", asyncHandler(ProductController.updateProduct));
 
 router.use(authentication);
@@ -28,5 +28,7 @@ router.post(
     isAdmin,
     asyncHandler(ProductController.setPublishedProduct)
 );
+
+router.post("/comment/:productId", asyncHandler(ProductController.reviewProduct));
 
 module.exports = router;
