@@ -4,8 +4,6 @@ const { Product, Sequelize, ProductOrder, User } = require("../models");
 const { Op } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const { BadRequestError, ForbiddenError } = require("../core/error.respone");
-const UserService = require("./user.service");
-const slugify = require("slugify");
 
 class ProductService {
     static defaultOrder = [
@@ -56,12 +54,11 @@ class ProductService {
         order = this.defaultOrder,
         offset = 0,
         limit = 20,
+        query = null,
     }) => {
         const products = await Product.findAll({
             where: {
-                isPublished: {
-                    [Op.eq]: true,
-                },
+                [Op.and]: [{ isPublished: true }, query],
             },
             attributes: {
                 exclude: ["createdAt", "updatedAt", "isDraft", "isPublished"],
@@ -224,6 +221,12 @@ class ProductService {
             name: holderUser.name,
             createdAt: new Date(),
         };
+    };
+
+    static getProductByCategory = async ({ categoryId }) => {
+        return await this.getAllPublishedProduct({
+            query: { category: categoryId },
+        });
     };
 }
 module.exports = ProductService;

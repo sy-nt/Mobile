@@ -72,6 +72,15 @@ class ProductController {
             }),
         }).send(res);
     };
+
+    getProductByCategory = async (req, res, next) => {
+        return new OKResponse({
+            message: "Get product by category success",
+            metadata: await ProductService.getProductByCategory({
+                categoryId: req.params.categoryId,
+            }),
+        }).send(res);
+    };
 }
 
 module.exports = new ProductController();
