@@ -45,8 +45,9 @@ class OTPService {
         const isMatch = await bcrypt.compare(code, hashedOtp);
         if (!isMatch) throw new BadRequestError("Invalid OTP");
 
-        if (await this.deleteOTP({ userID: holderUser.dataValues.id }))
-            return holderUser.dataValues;
+        if (await this.deleteOTP({ userId: holderUser.dataValues.id }))
+            return true;
+
         return null;
     };
 

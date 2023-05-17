@@ -18,7 +18,7 @@ const ROLES = {
 };
 
 class AccessService {
-    static signUp = async ({ email, password, phone }) => {
+    static signUp = async ({ email, password, phone, name }) => {
         const holderUser = await UserService.findUserByEmail(email);
         if (holderUser !== null)
             throw new BadRequestError("Error:: Email already registed");
@@ -27,6 +27,7 @@ class AccessService {
             email,
             password,
             phone,
+            name,
             roles: ROLES["user"],
         });
         if (!newUser) throw new BadRequestError("Something wrong");

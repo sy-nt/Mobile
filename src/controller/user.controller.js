@@ -25,6 +25,13 @@ class UserController {
             metadata: await OTPService.sendOTP(req.body),
         }).send(res);
     };
+
+    getAllUser = async (req, res, next) => {
+        return new OKResponse({
+            message: "Get all user success",
+            metadata: await UserService.getAllUser(),
+        }).send(res);
+    };
 }
 
 module.exports = new UserController();

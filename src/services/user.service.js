@@ -4,7 +4,7 @@ const { User, OTP, KeyToken, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const { verifyOTP } = require("./otp.service");
 const { activeCart } = require("./cart.service");
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
 class UserService {
     static createUser = async ({ email, password }) => {
@@ -30,6 +30,7 @@ class UserService {
 
     static activeUser = async ({ email, code }) => {
         const verify = await verifyOTP({ email, code });
+        console.log(verify);
         if (!verify) throw new Error("Something wrong happend");
 
         const activeUser = await User.update(
@@ -65,6 +66,15 @@ class UserService {
         };
     };
 
+    static getAllUser = async () => {
+        const users = await User.findAll({
+            attributes: {
+                attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+            },
+        });
+        if (users) return JSON.parse(JSON.stringify(users, null, 2));
+        return null;
+    };
 }
 
 module.exports = UserService;
