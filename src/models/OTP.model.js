@@ -32,12 +32,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             hooks: {
-                beforeValidate: (OTP) => {
-                    const code = Math.round(
-                        Math.random() * 100000 + 10000
-                    ).toString();
-                    OTP.code = bcrypt.hashSync(code, 10);
-                },
                 beforeCreate: (OTP) => {
                     OTP.id = uuidv4();
                     OTP.expireIn =

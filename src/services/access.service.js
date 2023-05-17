@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const UserService = require("./user.service");
 const KeyTokenService = require("./keyToken.service");
 const CartService = require("./cart.service");
+const OTPService = require("./otp.service");
 const { BadRequestError } = require("../core/error.respone");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils/index");
@@ -31,6 +32,7 @@ class AccessService {
         if (!newUser) throw new BadRequestError("Something wrong");
 
         await CartService.createCart({ id: newUser.id });
+        await OTPService.sendOTP({ email });
 
         return {
             user: getInfoData({

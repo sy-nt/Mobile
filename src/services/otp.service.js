@@ -1,13 +1,11 @@
 "use strict";
 
 const { OTP, User, sequelize } = require("../models");
-const { Op, Model } = require("sequelize");
+const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
-const UserService = require("./user.service");
 const { BadRequestError } = require("../core/error.respone");
-
-const EXPRIRE_TIME = 10;
+const nodeMailerSevice = require("./nodemailer.sevice");
 
 class OTPService {
     static sendOTP = async ({ email }) => {
@@ -20,7 +18,14 @@ class OTPService {
         });
         if (!holderUser) throw new BadRequestError("User is not registed");
 
-        return await this.createOTP({ userId: holderUser.dataValues.id });
+        const otpCode = await this.createOTP({
+            userId: holderUser.dataValues.id,
+        });
+
+        return await nodeMailerSevice.sendOTPEmail({
+            OTP: otpCode,
+            receiver: holderUser,
+        });
     };
 
     static verifyOTP = async ({ email, code }) => {
@@ -46,11 +51,13 @@ class OTPService {
     };
 
     static createOTP = async ({ userId }) => {
+        const otpCode = Math.round(Math.random() * 10000) + 100000;
         const otp = OTP.create({
             userId,
+            code: bcrypt.hashSync(otpCode.toString(), 10),
         });
 
-        if (otp) return otp.dataValues;
+        if (otp) return otpCode;
         return null;
     };
 
