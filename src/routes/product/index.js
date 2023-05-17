@@ -16,9 +16,15 @@ router.post(
     asyncHandler(ProductController.getProductByCategory)
 );
 router.post("/search", asyncHandler(ProductController.searchProductWithFilter));
-router.post("/:productId", asyncHandler(ProductController.updateProduct));
 
+router.get("/:id", asyncHandler(ProductController.getProductById));
 router.use(authentication);
+
+router.post(
+    "/:productId",
+    isAdmin,
+    asyncHandler(ProductController.updateProduct)
+);
 
 router.get("/draft", asyncHandler(ProductController.getAllDraftProduct));
 router.post("/", asyncHandler(ProductController.createProduct));

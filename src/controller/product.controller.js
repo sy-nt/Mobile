@@ -81,6 +81,13 @@ class ProductController {
             }),
         }).send(res);
     };
+
+    getProductById = async (req, res, next) => {
+        return new OKResponse({
+            message: "Get product by id ",
+            metadata: await ProductService.findProductById(req.params.id),
+        }).send(res);
+    };
 }
 
 module.exports = new ProductController();
