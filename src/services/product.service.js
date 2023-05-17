@@ -225,7 +225,10 @@ class ProductService {
     };
 
     static getProductByCategory = async ({ categoryId }) => {
-        const categoryList = await Category;
+        const isValidCategory = await CategoryService.isValiCategoryId(
+            categoryId
+        );
+        if (!isValidCategory) return null;
 
         return await this.getAllPublishedProduct({
             query: { category: categoryId },
