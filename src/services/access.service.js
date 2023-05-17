@@ -33,7 +33,7 @@ class AccessService {
         await CartService.createCart({ id: newUser.id });
 
         return {
-            shop: getInfoData({
+            user: getInfoData({
                 fields: ["name", "email", "phone", "image"],
                 object: newUser,
             }),

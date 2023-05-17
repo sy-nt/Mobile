@@ -41,6 +41,8 @@ module.exports = {
                     description:
                         "Đậu hay đỗ (theo phương ngữ miền Bắc) là hạt của một trong những chi thực vật có hoa thuộc họ Fabaceae. Chúng thường được dùng làm rau củ quả trong bữa ăn của con người hoặc động vật",
                     thumb: "https://wholefood.vn/wp-content/uploads/2021/08/an-dau-nanh-rang-lieu-co-tot-cho-suc-khoe-khong-201912081908160637.jpg",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     id: "a3d190b1-040b-4891-b70b-66994366ddd4",

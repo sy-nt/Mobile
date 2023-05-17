@@ -45,6 +45,7 @@ class OrderService {
             id: cartId,
             options: {
                 count_product: 0,
+                total: 0,
             },
         });
 
