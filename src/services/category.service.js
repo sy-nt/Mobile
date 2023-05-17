@@ -19,6 +19,15 @@ class CategoryService {
         if (category) return category.dataValues;
         return null;
     };
+
+    static isValiCategoryId = async (id) => {
+        const categories = await Category.findOne({
+            id: id,
+        });
+
+        if (categories) true;
+        return false;
+    };
 }
 
 module.exports = CategoryService;

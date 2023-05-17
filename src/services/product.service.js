@@ -4,6 +4,7 @@ const { Product, Sequelize, ProductOrder, User } = require("../models");
 const { Op } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const { BadRequestError, ForbiddenError } = require("../core/error.respone");
+const CategoryService = require("./category.service");
 
 class ProductService {
     static defaultOrder = [
@@ -224,6 +225,8 @@ class ProductService {
     };
 
     static getProductByCategory = async ({ categoryId }) => {
+        const categoryList = await Category;
+
         return await this.getAllPublishedProduct({
             query: { category: categoryId },
         });

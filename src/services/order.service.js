@@ -104,6 +104,13 @@ class OrderService {
 
         return true;
     };
+
+    static getAllOrder = async () => {
+        const orderList = await Order.findAll();
+        console.log(`orderlist::`, orderList);
+        if (orderList) return JSON.parse(JSON.stringify(orderList, null, 2));
+        return null;
+    };
 }
 
 module.exports = OrderService;

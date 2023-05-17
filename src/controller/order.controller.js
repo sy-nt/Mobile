@@ -20,6 +20,12 @@ class OrderController {
             }),
         }).send(res);
     };
+    getAllOrder = async (req, res, next) => {
+        return new OKResponse({
+            message: "Get all order success",
+            metadata: await OrderService.getAllOrder(),
+        }).send(res);
+    };
 }
 
 module.exports = new OrderController();

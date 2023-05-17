@@ -4,6 +4,7 @@ const { User, OTP, KeyToken, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const { verifyOTP } = require("./otp.service");
 const { activeCart } = require("./cart.service");
+const jwt = require('jsonwebtoken')
 
 class UserService {
     static createUser = async ({ email, password }) => {
@@ -63,6 +64,7 @@ class UserService {
             updatedUser,
         };
     };
+
 }
 
 module.exports = UserService;

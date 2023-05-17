@@ -17,7 +17,7 @@ router.post(
 );
 router.post("/search", asyncHandler(ProductController.searchProductWithFilter));
 
-router.get("/:id", asyncHandler(ProductController.getProductById));
+router.get("/id/:id", asyncHandler(ProductController.getProductById));
 router.use(authentication);
 
 router.post(

@@ -10,5 +10,6 @@ const { authentication, isAdmin } = require("../../auth/authUtils");
 router.use(authentication);
 router.post("/:orderId", asyncHandler(OrderController.updateStatusOrder));
 router.post("/", asyncHandler(OrderController.placeOrder));
+router.get("/", isAdmin, asyncHandler(OrderController.getAllOrder));
 
 module.exports = router;
