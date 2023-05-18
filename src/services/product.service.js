@@ -228,6 +228,7 @@ class ProductService {
         const isValidCategory = await CategoryService.isValiCategoryId(
             categoryId
         );
+        console.log(isValidCategory);
         if (!isValidCategory) throw new Error("invalid categoryId");
 
         return await this.getAllPublishedProduct({

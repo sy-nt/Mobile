@@ -54,8 +54,8 @@ class AccessService {
         );
         if (!isCorectPass) throw new BadRequestError("Invalid request");
 
-        // if (!holderUser.verify)
-        //     throw new BadRequestError("Error:: user is not verified");
+        if (!holderUser.verify)
+            throw new BadRequestError("Error:: user is not verified");
 
         const tokens = await createTokenPair({
             id: holderUser.id,

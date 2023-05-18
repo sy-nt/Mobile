@@ -22,10 +22,11 @@ class CategoryService {
 
     static isValiCategoryId = async (id) => {
         const categories = await Category.findOne({
-            id: id,
+            where: {
+                id: id,
+            },
         });
-
-        if (categories) true;
+        if (categories) return true;
         return false;
     };
 }
