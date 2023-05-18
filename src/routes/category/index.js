@@ -10,6 +10,7 @@ const { authentication, isAdmin } = require("../../auth/authUtils");
 router.get("/", asyncHandler(CategoryController.findAllCategory));
 
 router.use(authentication);
+router.post("/:id", isAdmin, asyncHandler(CategoryController.updateCategory));
 router.post("/", isAdmin, asyncHandler(CategoryController.createCategory));
 
 module.exports = router;

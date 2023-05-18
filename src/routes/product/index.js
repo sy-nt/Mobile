@@ -44,4 +44,6 @@ router.post(
     asyncHandler(ProductController.reviewProduct)
 );
 
+router.get("/all", isAdmin, asyncHandler(ProductController.getAllProduct));
+
 module.exports = router;

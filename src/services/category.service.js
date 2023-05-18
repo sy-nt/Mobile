@@ -20,6 +20,17 @@ class CategoryService {
         return null;
     };
 
+    static updateCategory = async ({ id, payload }) => {
+        const cate = await Category.update(payload, {
+            where: {
+                id,
+            },
+        });
+
+        if (cate) return true;
+        throw new Error("Invalid");
+    };
+
     static isValiCategoryId = async (id) => {
         const categories = await Category.findOne({
             where: {

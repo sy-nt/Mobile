@@ -88,6 +88,13 @@ class ProductController {
             metadata: await ProductService.findProductById(req.params.id),
         }).send(res);
     };
+
+    getAllProduct = async (req, res, next) => {
+        return new OKResponse({
+            message: "Get all product",
+            metadata: await ProductService.getAllProduct(),
+        }).send(res);
+    };
 }
 
 module.exports = new ProductController();

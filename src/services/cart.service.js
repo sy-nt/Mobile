@@ -86,10 +86,7 @@ class CartService {
             },
         });
         if (!updatedCart) throw new BadRequestError("Updated cart failed");
-        return {
-            ...updatedCart,
-            productCarts,
-        };
+        return productCarts;
     };
 
     static removeProductCart = async ({ id, productIds }) => {

@@ -56,14 +56,15 @@ class UserService {
         const updatedUser = await User.update(req.body, {
             where: {
                 email: {
-                    [Op.eq]: req.user.email,
+                    [Op.eq]: req.body.email,
                 },
             },
             attributes: { exclude: ["createdAt", "updatedAt"] },
         });
-        return {
-            updatedUser,
-        };
+
+        console.log(updatedUser);
+        if (updatedUser) return true;
+        throw new Error("Invalid");
     };
 
     static getAllUser = async () => {

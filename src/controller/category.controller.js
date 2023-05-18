@@ -17,6 +17,16 @@ class CategoryController {
             metadata: await CategoryService.createCategory(req),
         }).send(res);
     };
+
+    updateCategory = async (req, res, next) => {
+        return new OKResponse({
+            message: "Update category success",
+            metadata: await CategoryService.updateCategory({
+                id: req.params.id,
+                payload: req.body,
+            }),
+        }).send(res);
+    };
 }
 
 module.exports = new CategoryController();

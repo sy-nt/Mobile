@@ -235,5 +235,11 @@ class ProductService {
             query: { category: categoryId },
         });
     };
+
+    static getAllProduct = async () => {
+        const data = await Product.findAll();
+        if (!data) return null;
+        return JSON.parse(JSON.stringify(data, null, 2));
+    };
 }
 module.exports = ProductService;
