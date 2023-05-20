@@ -5,12 +5,12 @@ const router = express.Router();
 
 const CategoryController = require("../../controller/category.controller");
 const { asyncHandler } = require("../../helpers/asyncHandler");
-const { authentication, isAdmin } = require("../../auth/authUtils");
+const { authentication, isAdmin, isStaff } = require("../../auth/authUtils");
 
 router.get("/", asyncHandler(CategoryController.findAllCategory));
 
 router.use(authentication);
-router.post("/:id", isAdmin, asyncHandler(CategoryController.updateCategory));
-router.post("/", isAdmin, asyncHandler(CategoryController.createCategory));
+router.post("/:id", isStaff, asyncHandler(CategoryController.updateCategory));
+router.post("/", isStaff, asyncHandler(CategoryController.createCategory));
 
 module.exports = router;

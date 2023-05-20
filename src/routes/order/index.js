@@ -5,11 +5,15 @@ const router = express.Router();
 
 const OrderController = require("../../controller/order.controller");
 const { asyncHandler } = require("../../helpers/asyncHandler");
-const { authentication, isAdmin } = require("../../auth/authUtils");
+const { authentication, isStaff } = require("../../auth/authUtils");
 
 router.use(authentication);
-router.post("/:orderId", asyncHandler(OrderController.updateStatusOrder));
+router.post(
+    "/:orderId",
+    isStaff,
+    asyncHandler(OrderController.updateStatusOrder)
+);
 router.post("/", asyncHandler(OrderController.placeOrder));
-router.get("/", isAdmin, asyncHandler(OrderController.getAllOrder));
+router.get("/", isStaff, asyncHandler(OrderController.getAllOrder));
 
 module.exports = router;

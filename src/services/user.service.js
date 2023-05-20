@@ -30,7 +30,6 @@ class UserService {
 
     static activeUser = async ({ email, code }) => {
         const verify = await verifyOTP({ email, code });
-        console.log(verify);
         if (!verify) throw new Error("Something wrong happend");
 
         const activeUser = await User.update(
@@ -62,7 +61,6 @@ class UserService {
             attributes: { exclude: ["createdAt", "updatedAt"] },
         });
 
-        console.log(updatedUser);
         if (updatedUser) return true;
         throw new Error("Invalid");
     };

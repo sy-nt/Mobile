@@ -1,6 +1,5 @@
 "use strict";
-const { User, KeyToken } = require("../models");
-const { v4: uuidv4 } = require("uuid");
+const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const UserService = require("./user.service");
 const KeyTokenService = require("./keyToken.service");
@@ -9,7 +8,6 @@ const OTPService = require("./otp.service");
 const { BadRequestError } = require("../core/error.respone");
 const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData } = require("../utils/index");
-const { Op } = require("sequelize");
 
 const ROLES = {
     admin: "0001",
@@ -52,7 +50,7 @@ class AccessService {
             password,
             holderUser.password
         );
-        if (!isCorectPass) throw new BadRequestError("Invalid request");
+        if (!isCorectPass) throw new BadRequestError("Wrong email/ password");
 
         if (!holderUser.verify)
             throw new BadRequestError("Error:: user is not verified");

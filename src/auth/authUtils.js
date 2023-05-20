@@ -68,7 +68,14 @@ const isAdmin = asyncHandler(async (req, res, next) => {
     const { email } = req.user;
     const user = await findUserByEmail(email);
     if (user?.roles === "0001") return next();
-    throw new UnauthorizedError("Invalid");
+    throw new UnauthorizedError();
+});
+
+const isStaff = asyncHandler(async (req, res, next) => {
+    const { email } = req.user;
+    const user = await findUserByEmail(email);
+    if (user?.roles !== "0001") return next();
+    throw new UnauthorizedError();
 });
 
 const createTokenPair = async (payload) => {
@@ -100,4 +107,5 @@ module.exports = {
     authentication,
     createTokenPair,
     isAdmin,
+    isStaff,
 };
