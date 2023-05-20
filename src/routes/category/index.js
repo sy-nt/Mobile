@@ -5,7 +5,7 @@ const router = express.Router();
 
 const CategoryController = require("../../controller/category.controller");
 const { asyncHandler } = require("../../helpers/asyncHandler");
-const { authentication, isAdmin, isStaff } = require("../../auth/authUtils");
+const { authentication, isStaff } = require("../../auth/authUtils");
 
 router.get("/", asyncHandler(CategoryController.findAllCategory));
 
