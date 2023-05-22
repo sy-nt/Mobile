@@ -14,6 +14,20 @@ class CartService {
         return null;
     };
 
+    static getCart = async ({ id }) => {
+        const cart = await Cart.findOne({
+            where: {
+                id: id,
+            },
+        });
+        if (!cart) throw new Error("Invalid userId");
+        const cartList = await ProductCartService.findAllProductCartByCartId(
+            id
+        );
+        if (!cartList) return null;
+        return cartList;
+    };
+
     static activeCart = async ({ id }) => {
         const cart = await Cart.update(
             {

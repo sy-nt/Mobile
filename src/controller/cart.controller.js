@@ -23,6 +23,15 @@ class CartController {
             }),
         }).send(res);
     };
+
+    getCart = async (req, res, next) => {
+        return new OKResponse({
+            message: "Get  cart success",
+            metadata: await CartService.getCart({
+                id: req.user.id,
+            }),
+        }).send(res);
+    };
 }
 
 module.exports = new CartController();

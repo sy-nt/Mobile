@@ -10,5 +10,5 @@ const { authentication, isAdmin } = require("../../auth/authUtils");
 router.use(authentication);
 router.post("/add", asyncHandler(CartController.addProductToCart));
 router.post("/remove", asyncHandler(CartController.removeProductCart));
-
+router.post("/", asyncHandler(CartController.getCart));
 module.exports = router;
